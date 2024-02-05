@@ -3,15 +3,24 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React,{useEffect,useState} from "react";
 import { useSelector } from "react-redux";
-import { addToCart, decrementQty, incrementQty, removeFromCart } from "@/redux/slices/cartSlice";
+import { decrementQty, incrementQty, removeFromCart } from "@/redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
 
 export default function Cart() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart);
   console.log(cartItems);
+
+  const [cartTotal, setCartTotal] = useState(0); 
+
+  useEffect(() => {
+    const total = cartItems.reduce((accumulator, item) => {
+      return accumulator + item.qty * item.price;
+    }, 0);
+    setCartTotal(total);
+  }, [cartItems]);
   return (
     <div className="px-4 md:px-20 py-16">
       <Breadcrumb />
@@ -86,7 +95,7 @@ export default function Cart() {
           <h2 className="text-2xl pb-3">Cart total</h2>
           <div className="flex items-center justify-between border-b border-slate-500 pb-6">
             <span>Subtotal </span>
-            <span>$589</span>
+            <span>{cartTotal.toFixed(2)}</span>
           </div>
           <div className="flex items-center justify-between pb-4 mt-2">
             <span>Tax </span>
@@ -101,10 +110,10 @@ export default function Cart() {
           </p>
           <div className="flex items-center justify-between py-4 font-bold">
             <span>Total </span>
-            <span>$1000</span>
+            <span>{(cartTotal+10).toFixed(2)}</span>
           </div>
           <Link
-            href="#"
+            href="/"
             className="bg-slate-200 text-slate-900 rounded-lg py-2 px-4 font-normal"
           >
             Continue to Payment
